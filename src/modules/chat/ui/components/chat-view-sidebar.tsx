@@ -30,9 +30,7 @@ import {
 } from "@/components/ui/sidebar";
 import { ChatViewSwitcher } from "./chat-view-switcher";
 import { ChatViewNavSecondary } from "./chat-view-nav-secondary";
-import { authClient } from "@/lib/auth-client";
 import { Skeleton } from "@/components/ui/skeleton";
-
 
 const data = {
   user: {

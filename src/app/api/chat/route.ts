@@ -24,12 +24,7 @@ export async function POST(req: Request) {
             responseMessages: response.messages,
           }),
         });
-        console.log("success")
     },
   });
-
-  console.log(result.text)
-
-
   return result.toDataStreamResponse();
 }

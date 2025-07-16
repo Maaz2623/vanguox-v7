@@ -3,7 +3,6 @@ import { auth } from "@/lib/auth";
 import { ChatViewSidebar } from "@/modules/chat/ui/components/chat-view-sidebar";
 import { ChatViewSiteHeader } from "@/modules/chat/ui/components/chat-view-site-header";
 import { HomeView } from "@/modules/home/ui/views/home-view";
-import { MessageForm } from "@/modules/messages/ui/components/message-form";
 import { headers } from "next/headers";
 
 export default async function ChatViewLayout({
@@ -40,7 +39,6 @@ export default async function ChatViewLayout({
           <SidebarInset className="bg-transparent relative shadow-none! m-0! rounded-none! border-none!">
             <ChatViewSiteHeader />
             {children}
-            
           </SidebarInset>
         </SidebarProvider>
       )}

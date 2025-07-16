@@ -5,8 +5,7 @@ import Image from "next/image";
 import { MessageForm } from "../components/message-form";
 
 export const NewChatTemplateView = () => {
-  
-  const { handleInputChange, handleSubmit, input } = useChat();
+  const { handleInputChange, handleSubmit, input, status } = useChat();
 
   return (
     <div>
@@ -28,6 +27,7 @@ export const NewChatTemplateView = () => {
         </motion.div>
       </AnimatePresence>
       <MessageForm
+        status={status}
         input={input}
         handleInputChange={handleInputChange}
         handleSubmit={handleSubmit}
