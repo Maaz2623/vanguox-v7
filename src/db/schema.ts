@@ -1,5 +1,5 @@
 // drizzle/schema.ts
-import { boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { boolean, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 
 export const user = pgTable("user", {
@@ -51,8 +51,11 @@ export const verification = pgTable("verification", {
 
 
 export const chatsTable = pgTable('chats', {
-  id: text('id').primaryKey(), // chatId
+  id: uuid('id').primaryKey().notNull().defaultRandom(), // chatId
   title: text("title").default("title").notNull(),
+  userId: text("user_id").notNull().references(() => user.id, {
+	onDelete: "cascade"
+  }),
   createdAt: timestamp('created_at').defaultNow(),
 });
 

@@ -1,14 +1,18 @@
 "use client";
 
-import { NewChatTemplateView } from "@/modules/messages/ui/views/new-chat-template-view";
-import { usePathname } from "next/navigation";
+import { MessagesList } from "@/modules/messages/ui/components/messages-list";
+import { Message } from "ai";
 
-export const ChatView = () => {
-  const pathname = usePathname();
-
+export const ChatView = ({
+  chatId,
+  initialMessages,
+}: {
+  chatId: string;
+  initialMessages: Message[];
+}) => {
   return (
-    <div className="border h-full relative">
-      {pathname === "/" ? <NewChatTemplateView /> : "Messages List"}
+    <div className="h-full relative">
+      <MessagesList chatId={chatId} initialMessages={initialMessages} />
     </div>
   );
 };

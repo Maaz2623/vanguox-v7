@@ -40,7 +40,7 @@ export default async function ChatViewLayout({
           <SidebarInset className="bg-transparent relative shadow-none! m-0! rounded-none! border-none!">
             <ChatViewSiteHeader />
             {children}
-            <MessageForm />
+            
           </SidebarInset>
         </SidebarProvider>
       )}

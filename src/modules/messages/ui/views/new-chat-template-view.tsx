@@ -1,7 +1,13 @@
+"use client";
+import { useChat } from "@ai-sdk/react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
+import { MessageForm } from "../components/message-form";
 
 export const NewChatTemplateView = () => {
+  
+  const { handleInputChange, handleSubmit, input } = useChat();
+
   return (
     <div>
       <AnimatePresence mode="wait" initial={true}>
@@ -21,6 +27,11 @@ export const NewChatTemplateView = () => {
           </p>
         </motion.div>
       </AnimatePresence>
+      <MessageForm
+        input={input}
+        handleInputChange={handleInputChange}
+        handleSubmit={handleSubmit}
+      />
     </div>
   );
 };

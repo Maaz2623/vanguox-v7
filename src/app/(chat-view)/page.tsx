@@ -1,8 +1,8 @@
-import { ChatView } from "@/modules/chat/ui/views/chat-view";
+import { NewChatTemplateView } from "@/modules/messages/ui/views/new-chat-template-view";
 import React from "react";
 
 const HomePage = async () => {
-  return <ChatView />;
+  return <NewChatTemplateView />;
 };
 
 export default HomePage;
