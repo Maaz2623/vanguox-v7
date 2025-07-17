@@ -37,7 +37,7 @@ export const CodeBlock = ({ children, className }: CodeBlockProps) => {
         </Button>
       </div>
 
-      <pre className="scrollbar-thin px-6 py-4 overflow-x-auto bg-neutral-200 dark:bg-neutral-800 text-sm rounded-b-md">
+      <pre className="scrollbar-thin px-6 py-4 overflow-x-auto bg-neutral-200 dark:bg-neutral-800 text-sm w-full rounded-b-md">
         <code className={cn(className)}>{children}</code>
       </pre>
     </div>
