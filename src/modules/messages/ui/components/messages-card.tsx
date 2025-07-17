@@ -16,6 +16,7 @@ import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import { useChat } from "@ai-sdk/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { UIMessage } from "ai";
+import { ImageGenerating } from "@/ai/ui/image-generating";
 
 interface Props {
   role: UIMessage["role"];
@@ -116,6 +117,24 @@ export const AssistantMessage = React.memo(
                       }
                       break;
                     }
+                    case "imageGenerator":
+                      switch (part.toolInvocation.state) {
+                        case "call":
+                          return <ImageGenerating key={i} />;
+                        case "result":
+                          return (
+                            <div key={i} className="mb-4">
+                              <Image
+                                src={`data:image/png;base64,${part.toolInvocation.result.imageBase64}`}
+                                alt="Generated image"
+                                width={400}
+                                height={400}
+                                className="rounded-lg border border-muted"
+                              />
+                            </div>
+                          );
+                      }
+                      break;
                   }
                   break;
               }

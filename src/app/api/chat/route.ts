@@ -1,4 +1,5 @@
 import { saveChat } from '@/ai/functions';
+import { imageGenerationTool, weatherTool } from '@/ai/tools';
 import { SYSTEM_PROMPT } from '@/prompt';
 import { google } from '@ai-sdk/google';
 import { appendResponseMessages, streamText, smoothStream, tool } from 'ai';
@@ -17,19 +18,8 @@ export async function POST(req: Request) {
     }),
     system: SYSTEM_PROMPT,
     tools: {
-      weather: tool({
-        description: "Get the weather in a given location. Only use this tool if the user is clearly asking for weather info.",      
-        parameters: z.object({
-            location: z.string().describe('The location to get the weather for'),
-          }),
-          execute: async ({ location }) => {
-            const temperature = 10000
-            return {
-              location,
-              temperature,
-            };
-          },
-      }),
+      weather: weatherTool,
+      imageGenerator: imageGenerationTool
   },
     messages,
     experimental_transform: smoothStream({
