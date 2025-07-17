@@ -5,6 +5,8 @@ import { appendResponseMessages, streamText, smoothStream, tool } from 'ai';
 import z from 'zod';
 
 
+export const runtime = 'edge'; // ✅ run this function at the edge
+
 
 export async function POST(req: Request) {
   const { messages, id } = await req.json();
