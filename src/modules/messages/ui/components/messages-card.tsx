@@ -68,13 +68,6 @@ interface AssistantMessagePros {
 
 export const AssistantMessage = React.memo(
   ({ parts, status }: AssistantMessagePros) => {
-    const markdown = parts
-      .filter((part) => part.type === "text")
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      .map((part) => part.text)
-      .join("\n\n");
-
     return (
       <div
         className={cn("flex flex-col group px-2 pb-4 max-w-[90%] text-[16px]")}
@@ -99,11 +92,35 @@ export const AssistantMessage = React.memo(
               "shadow-none text-[15px] bg-transparent dark:bg-neutral-900 w-full p-5 border-none animate-fade-in max-w-full"
             )}
           >
-            {/* {isTypewriter ? (
-            <Typewriter typeSpeed={10} words={[content]} />
-          ) : ( */}
+            {parts.map((part, i) => {
+              switch (part.type) {
+                case "text":
+                  return (
+                    <MemoizedMarkdown key={i} content={part.text} id="123456" />
+                  );
 
-            <MemoizedMarkdown content={markdown} id="123456" />
+                case "tool-invocation":
+                  switch (part.toolInvocation.toolName) {
+                    case "weather": {
+                      switch (part.toolInvocation.state) {
+                        case "result": {
+                          const responseText = `Temp in ${part.toolInvocation.result.location} is ${part.toolInvocation.result.temperature}`;
+                          return (
+                            <MemoizedMarkdown
+                              key={i}
+                              content={responseText}
+                              id="123456"
+                            />
+                          );
+                        }
+                      }
+                      break;
+                    }
+                  }
+                  break;
+              }
+            })}
+
             {/* )} */}
             <div
               className={cn(

@@ -22,6 +22,14 @@ export const MessagesList = ({ chatId, initialMessages }: Props) => {
     id: chatId,
     initialMessages: initialMessages,
     sendExtraMessageFields: true, // send id and createdAt for each message
+
+    async onToolCall({ toolCall }) {
+      if (toolCall.toolName === "getLocation") {
+        const cities = ["New York", "Los Angeles", "Chicago", "San Fransisco"];
+
+        return cities[Math.floor(Math.random() * cities.length)];
+      }
+    },
   });
 
   const lastMessage = messages[messages.length - 1];
@@ -33,6 +41,7 @@ export const MessagesList = ({ chatId, initialMessages }: Props) => {
     messages[lastIndex]?.role === "assistant" && status === "streaming"
       ? messages[lastIndex]
       : null;
+
 
   const stableMessages = streamingMessage ? messages.slice(0, -1) : messages;
 
