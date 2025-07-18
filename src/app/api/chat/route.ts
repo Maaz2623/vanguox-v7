@@ -1,12 +1,10 @@
-import { saveChat } from '@/ai/functions';
+import {  saveChat } from '@/ai/functions';
 import { imageGenerationTool, weatherTool } from '@/ai/tools';
 import { SYSTEM_PROMPT } from '@/prompt';
 import { google } from '@ai-sdk/google';
-import { appendResponseMessages, streamText, smoothStream, tool } from 'ai';
-import z from 'zod';
+import { appendResponseMessages, streamText, smoothStream } from 'ai';
 
 
-export const runtime = 'edge'; // ✅ run this function at the edge
 
 
 export async function POST(req: Request) {
@@ -19,14 +17,21 @@ export async function POST(req: Request) {
     system: SYSTEM_PROMPT,
     tools: {
       weather: weatherTool,
-      imageGenerator: imageGenerationTool
+      imageGenerator: imageGenerationTool({
+        id,
+        messages
+      })
   },
     messages,
     experimental_transform: smoothStream({
       chunking: "word",
       delayInMs: 50
     }),
-    async onFinish({ response }) {
+    async onFinish({ response, toolCalls }) {
+
+      const noToolWasCalled = !toolCalls || toolCalls.length === 0;
+
+      if(noToolWasCalled) {
         await saveChat({
           id,
           messages: appendResponseMessages({
@@ -34,6 +39,7 @@ export async function POST(req: Request) {
             responseMessages: response.messages,
           }),
         });
+      }
     },
   });
   return result.toDataStreamResponse();

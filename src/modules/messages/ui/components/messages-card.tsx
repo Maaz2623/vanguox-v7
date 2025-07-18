@@ -134,7 +134,6 @@ export const AssistantMessage = React.memo(
                             </div>
                           );
                       }
-                      break;
                   }
                   break;
               }

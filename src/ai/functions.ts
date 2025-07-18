@@ -1,6 +1,6 @@
 "use server"
 import { db } from '@/db'; // your drizzle db instance
-import { chatsTable } from '@/db/schema';
+import { chatsTable, messagesFilesTable } from '@/db/schema';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { messagesTable } from '@/db/schema'; // assumes you have a messages table
@@ -66,4 +66,24 @@ export async function saveChat({
   console.error(error)
 }
 }
+
+export async function base64ToFile(base64: string, mimeType: string, filename: string): Promise<File> {
+  const byteString = atob(base64);
+  const arrayBuffer = new ArrayBuffer(byteString.length);
+  const intArray = new Uint8Array(arrayBuffer);
+  for (let i = 0; i < byteString.length; i++) {
+    intArray[i] = byteString.charCodeAt(i);
+  }
+  return new File([intArray], filename, { type: mimeType });
+}
+
+export async function saveFile(url: string, mimeType: string, msgId: string) {
+  await db.insert(messagesFilesTable).values({
+    fileUrl: url,
+    mimeType,
+    messageId: msgId
+  })
+}
+
+
 

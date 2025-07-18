@@ -1,5 +1,6 @@
 // drizzle/schema.ts
-import { boolean, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { Message } from 'ai';
+import { boolean, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 
 export const user = pgTable("user", {
@@ -63,6 +64,16 @@ export const messagesTable = pgTable('messages', {
   id: text('id').primaryKey().notNull(),
   chatId: text('chat_id').notNull(),
   role: text('role').notNull(), // "user", "assistant", or "function"
-  content: text('content').notNull(),
+  content: jsonb('content').$type<Message["content"]>().notNull(),
   createdAt: timestamp('created_at').defaultNow(),
 });
+
+
+export const messagesFilesTable = pgTable('messages_files_table', {
+	id: uuid('id').primaryKey().notNull().defaultRandom(),
+	mimeType: text("mime_type").notNull(),
+	fileUrl: text('file_url').notNull(),
+	messageId: text('message_id').references(() => messagesTable.id, {
+		onDelete: "cascade"
+	}).notNull()
+})
