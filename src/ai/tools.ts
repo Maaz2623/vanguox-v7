@@ -46,12 +46,13 @@ export const imageGenerationTool = ({
         })
 
 
-        console.log(result)
+        console.log(id, messages)
 
 
 
 
         for (const file of result.files) {
+            console.log(file)
             if(file.mimeType.startsWith('image/')) {
 
                 const readableFile = await base64ToFile(file.base64, file.mimeType, `file-${Date.now()}.png`)
