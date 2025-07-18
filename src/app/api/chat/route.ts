@@ -4,9 +4,6 @@ import { SYSTEM_PROMPT } from '@/prompt';
 import { google } from '@ai-sdk/google';
 import { appendResponseMessages, streamText, smoothStream } from 'ai';
 
-
-
-
 export async function POST(req: Request) {
   const { messages, id } = await req.json();
 

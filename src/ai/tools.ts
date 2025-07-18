@@ -46,6 +46,9 @@ export const imageGenerationTool = ({
         })
 
 
+        console.log(result)
+
+
 
 
         for (const file of result.files) {
