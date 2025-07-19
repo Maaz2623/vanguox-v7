@@ -18,7 +18,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { UIMessage } from "ai";
 import { ImageGenerating } from "@/ai/ui/image-generating";
 import { GeneratedImage } from "@/ai/ui/generated-image";
-import { getFileByMessage } from "@/ai/functions";
 import { DefaultMarkdown } from "@/components/files-markdown";
 
 interface Props {
