@@ -12,17 +12,30 @@ interface Props {
 export const GeneratedImage = ({ base64, mimeType, fileUrl }: Props) => {
   const [loading, setLoading] = useState(true);
 
-  const handleDownload = () => {
-    const link = document.createElement("a");
-    if (base64) {
-      link.href = `data:${mimeType};base64,${base64}`;
-    } else if (fileUrl) {
-      link.href = fileUrl;
+  const handleDownload = async () => {
+    try {
+      let href = "";
+
+      if (base64) {
+        href = `data:${mimeType};base64,${base64}`;
+      } else if (fileUrl) {
+        const res = await fetch(fileUrl);
+        const blob = await res.blob();
+        href = URL.createObjectURL(blob);
+      }
+
+      const link = document.createElement("a");
+      link.href = href;
+      link.download = "generated-image";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up the blob URL
+      if (!base64) URL.revokeObjectURL(href);
+    } catch (err) {
+      console.error("Download failed", err);
     }
-    link.download = "generated-image";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   const imageSrc = base64 ? `data:image/png;base64,${base64}` : fileUrl || "";
@@ -30,7 +43,7 @@ export const GeneratedImage = ({ base64, mimeType, fileUrl }: Props) => {
   if (!imageSrc) return null;
 
   return (
-    <div className="relative h-[400px] w-[400px]">
+    <div className="relative mb-4 w-[400px]">
       {!loading && (
         <Button
           variant={"ghost"}
