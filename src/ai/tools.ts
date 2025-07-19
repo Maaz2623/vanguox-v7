@@ -72,7 +72,6 @@ export const imageGenerationTool = ({
 
                     return {
                         fileUrl: uploadedFile.fileUrl,
-                        base64: file.base64,
                         mimeType: file.mimeType,
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         // @ts-ignore
