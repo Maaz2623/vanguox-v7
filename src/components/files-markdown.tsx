@@ -13,7 +13,7 @@ export const DefaultMarkdown = ({
 }) => {
   const trpc = useTRPC();
 
-  const { data } = useQuery(
+  const { data, isLoading } = useQuery(
     trpc.files.getFilesByMessageId.queryOptions({
       messageId: id,
     })
@@ -22,21 +22,19 @@ export const DefaultMarkdown = ({
   return (
     <div>
       <MemoizedMarkdown content={content} id="123456" />
-      {!data ? (
-        <ImageGenerating />
-      ) : (
-        data.map((file) => {
-          if (file.mimeType.startsWith("image/")) {
-            return (
-              <GeneratedImage
-                fileUrl={file.fileUrl}
-                mimeType={file.mimeType}
-                key={file.id}
-              />
-            );
-          }
-        })
-      )}
+      {!data
+        ? null
+        : data.map((file) => {
+            if (file.mimeType.startsWith("image/")) {
+              return (
+                <GeneratedImage
+                  fileUrl={file.fileUrl}
+                  mimeType={file.mimeType}
+                  key={file.id}
+                />
+              );
+            }
+          })}
     </div>
   );
 };
