@@ -42,7 +42,6 @@ export const MessagesList = ({ chatId, initialMessages }: Props) => {
       ? messages[lastIndex]
       : null;
 
-
   const stableMessages = streamingMessage ? messages.slice(0, -1) : messages;
 
   useEffect(() => {
@@ -83,6 +82,7 @@ export const MessagesList = ({ chatId, initialMessages }: Props) => {
         <div className="p-4 h-full w-2/3 mx-auto pt-10 pb-40 space-y-8">
           {stableMessages.map((message) => (
             <MessagesCard
+              id={message.id}
               status={status}
               role={message.role}
               parts={message.parts}
@@ -110,6 +110,7 @@ export const MessagesList = ({ chatId, initialMessages }: Props) => {
           {streamingMessage && (
             <div>
               <MessagesCard
+                id={streamingMessage.id}
                 status={status}
                 role={streamingMessage.role}
                 parts={streamingMessage.parts}

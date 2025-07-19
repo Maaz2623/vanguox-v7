@@ -87,6 +87,10 @@ export async function saveFile(url: string, mimeType: string, msgId: string) {
   return newFile
 }
 
+export async function getFileByMessage(messageId: string) {
+  const files = await db.select().from(messagesFilesTable).where(eq(messagesFilesTable.id,      messageId))
 
+  return files
+}
 
 

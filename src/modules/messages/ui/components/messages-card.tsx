@@ -18,20 +18,23 @@ import { AnimatePresence, motion } from "framer-motion";
 import { UIMessage } from "ai";
 import { ImageGenerating } from "@/ai/ui/image-generating";
 import { GeneratedImage } from "@/ai/ui/generated-image";
+import { getFileByMessage } from "@/ai/functions";
+import { DefaultMarkdown } from "@/components/files-markdown";
 
 interface Props {
   role: UIMessage["role"];
   parts: UIMessage["parts"];
   status?: ReturnType<typeof useChat>["status"];
+  id: string;
 }
 
-export const MessagesCard = ({ role, parts, status }: Props) => {
+export const MessagesCard = ({ role, parts, status, id }: Props) => {
   return (
     <div className="">
       {role === "user" ? (
         <UserMessage parts={parts} />
       ) : (
-        <AssistantMessage parts={parts} status={status} />
+        <AssistantMessage parts={parts} status={status} messageId={id} />
       )}
     </div>
   );
@@ -66,10 +69,11 @@ const UserMessage = ({ parts }: { parts: UIMessage["parts"] }) => {
 interface AssistantMessagePros {
   parts: UIMessage["parts"];
   status?: ReturnType<typeof useChat>["status"];
+  messageId: string;
 }
 
 export const AssistantMessage = React.memo(
-  ({ parts, status }: AssistantMessagePros) => {
+  ({ parts, status, messageId }: AssistantMessagePros) => {
     return (
       <div
         className={cn("flex flex-col group px-2 pb-4 max-w-[90%] text-[16px]")}
@@ -98,7 +102,11 @@ export const AssistantMessage = React.memo(
               switch (part.type) {
                 case "text":
                   return (
-                    <MemoizedMarkdown key={i} content={part.text} id="123456" />
+                    <DefaultMarkdown
+                      key={i}
+                      id={messageId}
+                      content={part.text}
+                    />
                   );
 
                 case "tool-invocation":
