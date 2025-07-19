@@ -29,7 +29,7 @@ export const imageGenerationTool = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   messages: any; // use correct type if available
 }) => tool({
-    description: "Generate an image from a prompt using Gemini",
+    description: "Generate an image from a prompt using Gemini.",
     parameters: z.object({
         prompt: z.string().describe("The prompt to generate an image for")
     }),
@@ -46,6 +46,7 @@ export const imageGenerationTool = ({
         })
 
 
+
         for (const file of result.files) {
             if(file.mimeType.startsWith('image/')) {
 
@@ -55,8 +56,6 @@ export const imageGenerationTool = ({
                     
                     
                     const [uploaded] = await utapi.uploadFiles([readableFile])
-                    
-                    
                     
                     await saveChat({
                         id,
@@ -73,8 +72,11 @@ export const imageGenerationTool = ({
 
                     return {
                         fileUrl: uploadedFile.fileUrl,
+                        base64: file.base64,
                         mimeType: file.mimeType,
-                        message: `Created an image of: ${prompt}`
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        message: result.response.messages[0].content[1].text
                     }
                 } catch (error) {
                     console.log(error)

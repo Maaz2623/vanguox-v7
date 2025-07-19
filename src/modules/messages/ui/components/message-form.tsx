@@ -64,34 +64,36 @@ export const MessageForm = ({
     >
       <div className="w-2/3 mx-auto">
         <div className="rounded-lg w-full mx-auto bg-neutral-200 dark:bg-neutral-800 border dark:border-neutral-700 border-neutral-300 overflow-hidden p-2">
-          <form onSubmit={onSubmit}>
-            <TextAreaAutoSize
-              rows={1}
-              value={input}
-              onChange={handleInputChange}
-              className="px-3 py-3 resize-none text-sm border-none w-full outline-none bg-transparent"
-              placeholder="What would you like to build?"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  if (e.shiftKey) return; // Allow newline
-                  e.preventDefault();
-                  if (e.ctrlKey || !e.metaKey) {
-                    onSubmit(e);
+          <fieldset disabled={status !== "ready" || isCreateChatPending}>
+            <form onSubmit={onSubmit}>
+              <TextAreaAutoSize
+                rows={1}
+                value={input}
+                onChange={handleInputChange}
+                className="px-3 py-3 resize-none text-sm border-none w-full outline-none bg-transparent"
+                placeholder="What would you like to build?"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    if (e.shiftKey) return; // Allow newline
+                    e.preventDefault();
+                    if (e.ctrlKey || !e.metaKey) {
+                      onSubmit(e);
+                    }
                   }
-                }
-              }}
-            />
-            <div className="h-8 flex justify-between items-center">
-              <div />
-              <Button size="icon" type="submit">
-                {isCreateChatPending ? (
-                  <Loader2Icon className="animate-spin size-4" />
-                ) : (
-                  <>{status === "ready" ? <ArrowUpIcon /> : <PauseIcon />}</>
-                )}
-              </Button>
-            </div>
-          </form>
+                }}
+              />
+              <div className="h-8 flex justify-between items-center">
+                <div />
+                <Button size="icon" type="submit">
+                  {isCreateChatPending ? (
+                    <Loader2Icon className="animate-spin size-4" />
+                  ) : (
+                    <>{status === "ready" ? <ArrowUpIcon /> : <PauseIcon />}</>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </fieldset>
         </div>
       </div>
     </motion.div>

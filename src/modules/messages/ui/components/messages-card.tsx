@@ -17,6 +17,7 @@ import { useChat } from "@ai-sdk/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { UIMessage } from "ai";
 import { ImageGenerating } from "@/ai/ui/image-generating";
+import { GeneratedImage } from "@/ai/ui/generated-image";
 
 interface Props {
   role: UIMessage["role"];
@@ -124,12 +125,15 @@ export const AssistantMessage = React.memo(
                         case "result":
                           return (
                             <div key={i} className="mb-4">
-                              <Image
-                                src={`${part.toolInvocation.result.fileUrl}`}
-                                alt="Generated image"
-                                width={400}
-                                height={400}
-                                className="rounded-lg border border-muted"
+                              <MemoizedMarkdown
+                                key={i}
+                                content={part.toolInvocation.result.message}
+                                id="123456"
+                              />
+                              <GeneratedImage
+                                base64={part.toolInvocation.result.base64}
+                                mimeType={part.toolInvocation.result.mimeType}
+                                fileUrl={part.toolInvocation.result.fileUrl}
                               />
                             </div>
                           );
