@@ -31,6 +31,7 @@ export async function POST(req: Request) {
 
       const noToolWasCalled = !toolCalls || toolCalls.length === 0;
 
+
       if(noToolWasCalled) {
         await saveChat({
           id,
