@@ -4,6 +4,9 @@ import { SYSTEM_PROMPT } from '@/prompt';
 import { google } from '@ai-sdk/google';
 import { appendResponseMessages, streamText, smoothStream } from 'ai';
 
+
+export const runtime = 'edge'; // 👈 This tells Next.js to use Edge Runtime
+
 export async function POST(req: Request) {
   const { messages, id } = await req.json();
 
