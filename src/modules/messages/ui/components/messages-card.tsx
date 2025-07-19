@@ -107,7 +107,6 @@ export const AssistantMessage = React.memo(
                       content={part.text}
                     />
                   );
-
                 case "tool-invocation":
                   switch (part.toolInvocation.toolName) {
                     case "weather": {

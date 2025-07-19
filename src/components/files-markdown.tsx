@@ -2,7 +2,6 @@ import { MemoizedMarkdown } from "./memoized-markdown";
 import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
 import { GeneratedImage } from "@/ai/ui/generated-image";
-import { ImageGenerating } from "@/ai/ui/image-generating";
 
 export const DefaultMarkdown = ({
   id,
@@ -13,7 +12,7 @@ export const DefaultMarkdown = ({
 }) => {
   const trpc = useTRPC();
 
-  const { data, isLoading } = useQuery(
+  const { data } = useQuery(
     trpc.files.getFilesByMessageId.queryOptions({
       messageId: id,
     })
