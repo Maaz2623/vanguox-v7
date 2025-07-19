@@ -78,12 +78,15 @@ export async function base64ToFile(base64: string, mimeType: string, filename: s
 }
 
 export async function saveFile(url: string, mimeType: string, msgId: string) {
-  await db.insert(messagesFilesTable).values({
+  const [newFile] = await db.insert(messagesFilesTable).values({
     fileUrl: url,
     mimeType,
     messageId: msgId
-  })
+  }).returning()
+
+  return newFile
 }
+
 
 
 

@@ -1,7 +1,7 @@
 import { google } from "@ai-sdk/google";
 import { appendResponseMessages, generateText, tool } from "ai";
 import z from "zod";
-import { base64ToFile, saveChat } from "./functions";
+import { base64ToFile, saveChat, saveFile } from "./functions";
 import { utapi } from "@/lib/uploadthing";
 
 
@@ -46,36 +46,40 @@ export const imageGenerationTool = ({
         })
 
 
-        console.log(id, messages)
-
-
-
-
         for (const file of result.files) {
-            console.log(file)
             if(file.mimeType.startsWith('image/')) {
 
                 const readableFile = await base64ToFile(file.base64, file.mimeType, `file-${Date.now()}.png`)
 
-                const [uploaded] = await utapi.uploadFiles([readableFile])
+                try {
+                    
+                    
+                    const [uploaded] = await utapi.uploadFiles([readableFile])
+                    
+                    
+                    
+                    await saveChat({
+                        id,
+                        messages: appendResponseMessages({
+                            messages,
+                            responseMessages: result.response.messages,
+                        }),
+                    });
+                    if(!uploaded.data) return
+                    
+                    const uploadedFile = await saveFile(uploaded.data.ufsUrl, file.mimeType, result.response.messages[0].id)
+                    
+                    console.log(uploadedFile.fileUrl)
 
-                console.log(uploaded.data?.ufsUrl)
-
-
-                await saveChat({
-                    id,
-                    messages: appendResponseMessages({
-                    messages,
-                    responseMessages: result.response.messages,
-                    }),
-                });
-
-
-                return {
-                    imageBase64: file.base64,
-                    mimeType: file.mimeType,
-                    message: `Created an image of: ${prompt}`
+                    return {
+                        fileUrl: uploadedFile.fileUrl,
+                        mimeType: file.mimeType,
+                        message: `Created an image of: ${prompt}`
+                    }
+                } catch (error) {
+                    console.log(error)
                 }
+
             }
         }
     }

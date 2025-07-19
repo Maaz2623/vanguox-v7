@@ -125,7 +125,7 @@ export const AssistantMessage = React.memo(
                           return (
                             <div key={i} className="mb-4">
                               <Image
-                                src={`data:image/png;base64,${part.toolInvocation.result.imageBase64}`}
+                                src={`${part.toolInvocation.result.fileUrl}`}
                                 alt="Generated image"
                                 width={400}
                                 height={400}
