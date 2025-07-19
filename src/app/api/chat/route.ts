@@ -4,6 +4,7 @@ import { SYSTEM_PROMPT } from '@/prompt';
 import { google } from '@ai-sdk/google';
 import { appendResponseMessages, streamText, smoothStream } from 'ai';
 
+export const runtime = "edge"
 
 
 export async function POST(req: Request) {
