@@ -64,11 +64,11 @@ export const imageGenerationTool = ({
                             responseMessages: result.response.messages,
                         }),
                     });
+
                     if(!uploaded.data) return
                     
                     const uploadedFile = await saveFile(uploaded.data.ufsUrl, file.mimeType, result.response.messages[0].id)
                     
-                    console.log(uploadedFile.fileUrl)
 
                     return {
                         fileUrl: uploadedFile.fileUrl,
