@@ -17,6 +17,8 @@ export const MessagesList = ({ chatId, initialMessages }: Props) => {
 
   const searchParams = useSearchParams();
   const initialMessage = searchParams.get("message");
+  const imageUrl = searchParams.get("imageUrl");
+  const filesParam = searchParams.get("files"); // assume this is a public file URL
 
   const { messages, input, handleInputChange, handleSubmit, status } = useChat({
     id: chatId,
@@ -45,19 +47,47 @@ export const MessagesList = ({ chatId, initialMessages }: Props) => {
   const stableMessages = streamingMessage ? messages.slice(0, -1) : messages;
 
   useEffect(() => {
-    if (initialMessage) {
-      handleInputChange({
-        target: { value: initialMessage },
-      } as React.ChangeEvent<HTMLTextAreaElement>);
+    async function fetchAndSubmit() {
+      let fileList: FileList | undefined;
 
-      handleSubmit();
+      if (filesParam) {
+        try {
+          const response = await fetch(filesParam);
+          const blob = await response.blob();
+          const filename = filesParam.split("/").pop() || "file";
+          const file = new File([blob], filename, { type: blob.type });
 
-      // Optional: clean up the URL
-      const url = new URL(window.location.href);
-      url.searchParams.delete("message");
-      window.history.replaceState({}, "", url.toString());
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          fileList = dataTransfer.files;
+        } catch (error) {
+          console.error("Failed to fetch file from URL:", error);
+        }
+      }
+
+      if (initialMessage) {
+        handleInputChange({
+          target: { value: initialMessage },
+        } as React.ChangeEvent<HTMLTextAreaElement>);
+
+        handleSubmit(undefined, {
+          experimental_attachments: fileList,
+          data: imageUrl ? { imageUrl } : undefined,
+        });
+
+        const url = new URL(window.location.href);
+        url.searchParams.delete("message");
+        url.searchParams.delete("imageUrl");
+        url.searchParams.delete("files");
+        window.history.replaceState({}, "", url.toString());
+      }
     }
-  }, [initialMessage, handleSubmit, handleInputChange]);
+
+    // only run when message is present
+    if (initialMessage) {
+      fetchAndSubmit();
+    }
+  }, [initialMessage, imageUrl, filesParam, handleInputChange, handleSubmit]);
 
   useEffect(() => {
     if (isLastMessageUser || status === "submitted") {
