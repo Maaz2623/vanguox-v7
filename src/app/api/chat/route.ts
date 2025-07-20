@@ -10,11 +10,6 @@ export const runtime = "edge"
 export async function POST(req: Request) {
   const { messages, id, data } = await req.json();
 
-
-  if(data?.imageUrl) {
-    console.log(data.imageUrl)
-  }
-
   const initialMessages = messages.slice(0, -1);
   const currentMessage = messages[messages.length - 1];
 

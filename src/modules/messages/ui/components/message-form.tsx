@@ -38,8 +38,6 @@ export const MessageForm = ({
     undefined
   );
 
-  const [anyFileUrl, setAnyFileUrl] = useState<string | undefined>(undefined);
-
   const [files, setFiles] = useState<FileList | undefined>(undefined);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -47,8 +45,6 @@ export const MessageForm = ({
     onClientUploadComplete: (data) => {
       if (data[0].type.startsWith("image/")) {
         setImageFileUrl(data[0].ufsUrl);
-      } else {
-        setAnyFileUrl(data[0].ufsUrl);
       }
     },
   });
