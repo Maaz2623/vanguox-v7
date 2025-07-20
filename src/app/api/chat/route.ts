@@ -8,7 +8,15 @@ export const runtime = "edge"
 
 
 export async function POST(req: Request) {
-  const { messages, id } = await req.json();
+  const { messages, id, data } = await req.json();
+
+
+  if(data.imageUrl) {
+    console.log(data.imageUrl)
+  }
+
+  const initialMessages = messages.slice(0, -1);
+  const currentMessage = messages[messages.length - 1];
 
   const result = await streamText({
     model: google("gemini-2.5-flash", {
@@ -22,7 +30,20 @@ export async function POST(req: Request) {
         messages
       })
   },
-    messages,
+    messages: data?.imageUrl ? [
+      ...initialMessages,
+      {
+        role: 'user',
+        content: [
+          {
+            type: 'text', text: currentMessage.content
+          },
+          {
+            type: "image", image: new URL(data.imageUrl)
+          }
+        ]
+      }
+    ] : messages,
     experimental_transform: smoothStream({
       chunking: "word",
       delayInMs: 50

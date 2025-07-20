@@ -2,7 +2,12 @@ import { google } from "@ai-sdk/google";
 import { appendResponseMessages, generateText, tool } from "ai";
 import z from "zod";
 import { base64ToFile, saveChat, saveFile } from "./functions";
-import { utapi } from "@/lib/uploadthing";
+import { UTApi } from "uploadthing/server";
+
+
+export const utapi = new UTApi({
+  // ...options,
+});
 
 
 
