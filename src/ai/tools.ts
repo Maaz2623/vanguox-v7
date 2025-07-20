@@ -1,8 +1,9 @@
 import { google } from "@ai-sdk/google";
-import { appendResponseMessages, generateText, tool } from "ai";
+import { appendResponseMessages, generateObject, generateText, tool } from "ai";
 import z from "zod";
 import { base64ToFile, saveChat, saveFile } from "./functions";
 import { UTApi } from "uploadthing/server";
+import { POSTGRES_PROMPT } from "@/prompt";
 
 
 export const utapi = new UTApi({
@@ -92,40 +93,23 @@ export const imageGenerationTool = ({
 })
 
 
+export const generateQuery = tool({
+    description: "Generated postgresql queries based on user input",
+    parameters: z.object({
+        prompt: z.string().describe("The prompt to generate an sql queries for")
+    }),
+    execute: async ({prompt}) =>    { 
+        const result = await generateObject({
+        model: google("gemini-2.0-flash"),
+        system: POSTGRES_PROMPT, // SYSTEM PROMPT AS ABOVE - OMITTED FOR BREVITY
+        prompt: `Generate the query necessary to retrieve the data the user wants: ${prompt}`,
+        schema: z.object({
+                query: z.string(),
+            })        
+        });
+         return {
+            query: result.object.query
+         } 
 
-
-
-        // const toolResults = await result.toolResults
-
-        // const imageToolResult = toolResults.find(
-        //   r => r.toolName === "imageGenerator" &&
-        //       r.result &&
-        //       "imageBase64" in r.result &&
-        //       "mimeType" in r.result
-        // );
-
-        // if (imageToolResult) {
-        //   const { imageBase64, mimeType } = imageToolResult.result as {
-        //     imageBase64: string;
-        //     mimeType: string;
-        //     message: string
-        //   };
-
-          
-        //   try {
-        //     const file = await base64ToFile(imageBase64, mimeType, `image-${Date.now()}.png`)
-
-        //     console.log(`file:`, file.name, file.size)
-
-        //     const [uploaded] = await utapi.uploadFiles([file])
-
-
-
-        //     const uploadedUrl = uploaded.data?.ufsUrl
-
-        //   } catch (error) {
-        //     console.log(error)
-        //   }
-        // } 
-
-          
+    }
+})

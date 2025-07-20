@@ -1,5 +1,5 @@
 import {  saveChat } from '@/ai/functions';
-import { imageGenerationTool, weatherTool } from '@/ai/tools';
+import { imageGenerationTool, weatherTool, generateQuery } from '@/ai/tools';
 import { SYSTEM_PROMPT } from '@/prompt';
 import { google } from '@ai-sdk/google';
 import { appendResponseMessages, streamText, smoothStream } from 'ai';
@@ -20,6 +20,7 @@ export async function POST(req: Request) {
     system: SYSTEM_PROMPT,
     tools: {
       weather: weatherTool,
+      queryGenerator: generateQuery,
       imageGenerator: imageGenerationTool({
         id,
         messages
