@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   const { messages, id, data } = await req.json();
 
 
-  if(data.imageUrl) {
+  if(data?.imageUrl) {
     console.log(data.imageUrl)
   }
 
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
         messages
       })
   },
-    messages: data?.imageUrl ? [
+    messages: data ? [
       ...initialMessages,
       {
         role: 'user',

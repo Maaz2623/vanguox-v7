@@ -34,14 +34,22 @@ export const MessageForm = ({
   input,
   status,
 }: Props) => {
-  const [fileUrl, setFileUrl] = useState<string | undefined>(undefined);
+  const [imageFileUrl, setImageFileUrl] = useState<string | undefined>(
+    undefined
+  );
+
+  const [anyFileUrl, setAnyFileUrl] = useState<string | undefined>(undefined);
 
   const [files, setFiles] = useState<FileList | undefined>(undefined);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
     onClientUploadComplete: (data) => {
-      setFileUrl(data[0].ufsUrl);
+      if (data[0].type.startsWith("image/")) {
+        setImageFileUrl(data[0].ufsUrl);
+      } else {
+        setAnyFileUrl(data[0].ufsUrl);
+      }
     },
   });
 
@@ -68,8 +76,8 @@ export const MessageForm = ({
     } else {
       handleSubmit(e, {
         experimental_attachments: files,
-        data: fileUrl && {
-          imageUrl: fileUrl,
+        data: imageFileUrl && {
+          imageUrl: imageFileUrl,
         },
       });
       setFiles(undefined);
