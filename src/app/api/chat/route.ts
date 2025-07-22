@@ -1,33 +1,30 @@
 import {  saveChat } from '@/ai/functions';
-import { imageGenerationTool, weatherTool, generateQuery } from '@/ai/tools';
+import { imageGenerationTool, generateQuery } from '@/ai/tools';
 import { SYSTEM_PROMPT } from '@/prompt';
 import { google } from '@ai-sdk/google';
-import { appendResponseMessages, streamText, smoothStream } from 'ai';
+import { appendResponseMessages, streamText, smoothStream, UIMessage, CoreMessage } from 'ai';
 
 export const runtime = "edge"
 
 
 export async function POST(req: Request) {
-  const { messages, id, data } = await req.json();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { messages, id, data }: {messages: UIMessage[], id: any, data: any} = await req.json();
 
   const initialMessages = messages.slice(0, -1);
   const currentMessage = messages[messages.length - 1];
 
   const result = await streamText({
     model: google("gemini-2.5-flash", {
-      // useSearchGrounding: true,
     }),
     system: SYSTEM_PROMPT,
+    // toolCallStreaming: true,
     tools: {
-      weather: weatherTool,
       queryGenerator: generateQuery,
-      imageGenerator: imageGenerationTool({
-        id,
-        messages
-      })
+      imageGenerator: imageGenerationTool()
   },
     messages: data ? [
-      ...initialMessages,
+      ...initialMessages as CoreMessage[],
       {
         role: 'user',
         content: [
@@ -47,20 +44,17 @@ export async function POST(req: Request) {
     async onError({error}) {
       console.log(error)
     },
-    async onFinish({ response, toolCalls }) {
+    async onFinish({ response,  }) {
+      const lastUserMessage = messages.slice(-1);
 
-      const noToolWasCalled = !toolCalls || toolCalls.length === 0;
 
-
-      if(noToolWasCalled) {
-        await saveChat({
-          id,
-          messages: appendResponseMessages({
-            messages,
-            responseMessages: response.messages,
-          }),
-        });
-      }
+       await saveChat({
+        chatId: id,
+        messages: appendResponseMessages({
+          messages: lastUserMessage,
+          responseMessages: response.messages
+        })
+      })
     },
   });
   return result.toDataStreamResponse();

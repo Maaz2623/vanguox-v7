@@ -1,6 +1,6 @@
 "use server"
 import { db } from '@/db'; // your drizzle db instance
-import { chatsTable, messagesFilesTable } from '@/db/schema';
+import { chatsTable, filesTable } from '@/db/schema';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { messagesTable } from '@/db/schema'; // assumes you have a messages table
@@ -27,45 +27,68 @@ export async function createChat(): Promise<string> {
 
 
 
-export async function loadChat(id: string): Promise<Message[]> {
+export async function loadChat(chatId: string): Promise<Message[]> {
   const rows = await db
     .select()
     .from(messagesTable)
-    .where(eq(messagesTable.chatId, id))
+    .where(eq(messagesTable.chatId, chatId))
     .orderBy(messagesTable.createdAt);
 
-  return rows.map((msg) => ({
-    id: msg.id,
-    role: msg.role as "data" | "user" | "assistant" | "system",
-    content: msg.content,
-  }));
+  return rows.map((row) => ({
+    ...row.message,
+    id: row.id
+  }))
+}
+
+export async function saveFile({
+  mimeType,
+  fileUrl
+}: {
+  fileUrl: string;
+  mimeType: string;
+}) {
+  try {
+     const data = await auth.api.getSession({
+        headers: await headers()
+    })
+
+    if(!data) {
+        throw new Error('Unauthorized')
+    }
+
+    await db.insert(filesTable).values({
+      userId: data.user.id,
+      mimeType,
+      fileUrl
+    })
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 export async function saveChat({
-  id: chatId,
+  chatId,
   messages,
 }: {
-  id: string;
+  chatId: string
   messages: Message[];
 }): Promise<void> {
   try {
-    
-    // Optional: clear previous messages for that chat
-  await db.delete(messagesTable).where(eq(messagesTable.chatId, chatId));
+    // 3. Insert only new messages
+    await db.insert(messagesTable).values(
+      messages.map((msg) => ({
+        message: {
+          ...msg,
+          id: msg.id,
+        },
+        chatId,
+      }))
+    );
+  } catch (error) {
+    console.error('Failed to save chat:', error);
+  }
+}
 
-  // Insert new messages
-  await db.insert(messagesTable).values(
-    messages.map((msg) => ({
-      id: msg.id,
-      role: msg.role,
-      content: msg.content,
-      chatId,
-    }))
-  );
-} catch (error) {
-  console.error(error)
-}
-}
 
 export async function base64ToFile(base64: string, mimeType: string, filename: string): Promise<File> {
   const byteString = atob(base64);
@@ -75,15 +98,5 @@ export async function base64ToFile(base64: string, mimeType: string, filename: s
     intArray[i] = byteString.charCodeAt(i);
   }
   return new File([intArray], filename, { type: mimeType });
-}
-
-export async function saveFile(url: string, mimeType: string, msgId: string) {
-  const [newFile] = await db.insert(messagesFilesTable).values({
-    fileUrl: url,
-    mimeType,
-    messageId: msgId
-  }).returning()
-
-  return newFile
 }
 

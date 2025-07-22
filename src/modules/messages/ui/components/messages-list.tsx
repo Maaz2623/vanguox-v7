@@ -20,18 +20,18 @@ export const MessagesList = ({ chatId, initialMessages }: Props) => {
   const imageUrl = searchParams.get("imageUrl");
   const filesParam = searchParams.get("files"); // assume this is a public file URL
 
-  const { messages, input, handleInputChange, handleSubmit, status } = useChat({
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    status,
+    addToolResult,
+  } = useChat({
     id: chatId,
     initialMessages: initialMessages,
     sendExtraMessageFields: true, // send id and createdAt for each message
-
-    async onToolCall({ toolCall }) {
-      if (toolCall.toolName === "getLocation") {
-        const cities = ["New York", "Los Angeles", "Chicago", "San Fransisco"];
-
-        return cities[Math.floor(Math.random() * cities.length)];
-      }
-    },
+    // maxSteps: 5,
   });
 
   const lastMessage = messages[messages.length - 1];
@@ -112,6 +112,7 @@ export const MessagesList = ({ chatId, initialMessages }: Props) => {
         <div className="p-4 h-full w-2/3 mx-auto pt-10 pb-40 space-y-8">
           {stableMessages.map((message) => (
             <MessagesCard
+              addToolResult={addToolResult}
               id={message.id}
               status={status}
               role={message.role}
@@ -140,6 +141,7 @@ export const MessagesList = ({ chatId, initialMessages }: Props) => {
           {streamingMessage && (
             <div>
               <MessagesCard
+                addToolResult={addToolResult}
                 id={streamingMessage.id}
                 status={status}
                 role={streamingMessage.role}

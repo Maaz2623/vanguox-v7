@@ -60,20 +60,21 @@ export const chatsTable = pgTable('chats', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+
 export const messagesTable = pgTable('messages', {
-  id: text('id').primaryKey().notNull(),
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
   chatId: text('chat_id').notNull(),
-  role: text('role').notNull(), // "user", "assistant", or "function"
-  content: jsonb('content').$type<Message["content"]>().notNull(),
+  message: jsonb('message').$type<Message>().notNull(),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
 
-export const messagesFilesTable = pgTable('messages_files_table', {
-	id: uuid('id').primaryKey().notNull().defaultRandom(),
-	mimeType: text("mime_type").notNull(),
+export const filesTable = pgTable('files', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  userId: text('user_id').references(() => user.id, {
+	onDelete: "cascade"
+  }).notNull(),
+  mimeType: text("mime_type").notNull(),
 	fileUrl: text('file_url').notNull(),
-	messageId: text('message_id').references(() => messagesTable.id, {
-		onDelete: "cascade"
-	}).notNull()
+  createdAt: timestamp('created_at').defaultNow(),
 })

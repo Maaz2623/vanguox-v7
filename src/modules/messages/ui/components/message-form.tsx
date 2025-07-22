@@ -148,7 +148,7 @@ export const MessageForm = ({
                 <div className="h-8 flex justify-between items-center">
                   <div className="w-fit">
                     <Button
-                      variant={`secondary`}
+                      variant={`ghost`}
                       size={`icon`}
                       type="button"
                       className="h-8 shadow-none w-8"

@@ -12,12 +12,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import React from "react";
-import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import { useChat } from "@ai-sdk/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { UIMessage } from "ai";
-import { ImageGenerating } from "@/ai/ui/image-generating";
-import { GeneratedImage } from "@/ai/ui/generated-image";
 import { DefaultMarkdown } from "@/components/files-markdown";
 
 interface Props {
@@ -25,15 +22,27 @@ interface Props {
   parts: UIMessage["parts"];
   status?: ReturnType<typeof useChat>["status"];
   id: string;
+  addToolResult: ReturnType<typeof useChat>["addToolResult"];
 }
 
-export const MessagesCard = ({ role, parts, status, id }: Props) => {
+export const MessagesCard = ({
+  role,
+  parts,
+  status,
+  id,
+  addToolResult,
+}: Props) => {
   return (
     <div className="">
       {role === "user" ? (
         <UserMessage parts={parts} />
       ) : (
-        <AssistantMessage parts={parts} status={status} messageId={id} />
+        <AssistantMessage
+          addToolResult={addToolResult}
+          parts={parts}
+          status={status}
+          messageId={id}
+        />
       )}
     </div>
   );
@@ -69,6 +78,7 @@ interface AssistantMessagePros {
   parts: UIMessage["parts"];
   status?: ReturnType<typeof useChat>["status"];
   messageId: string;
+  addToolResult: ReturnType<typeof useChat>["addToolResult"];
 }
 
 export const AssistantMessage = React.memo(
@@ -97,62 +107,12 @@ export const AssistantMessage = React.memo(
               "shadow-none text-[15px] bg-transparent dark:bg-neutral-900 w-full p-5 border-none animate-fade-in max-w-full"
             )}
           >
-            {parts.map((part, i) => {
-              switch (part.type) {
-                case "text":
-                  return (
-                    <DefaultMarkdown
-                      key={i}
-                      id={messageId}
-                      content={part.text}
-                    />
-                  );
-                case "tool-invocation":
-                  switch (part.toolInvocation.toolName) {
-                    case "weather": {
-                      switch (part.toolInvocation.state) {
-                        case "result": {
-                          const responseText = `Temp in ${part.toolInvocation.result.location} is ${part.toolInvocation.result.temperature}`;
-                          return (
-                            <MemoizedMarkdown
-                              key={i}
-                              content={responseText}
-                              id="123456"
-                            />
-                          );
-                        }
-                      }
-                      break;
-                    }
-                    case "imageGenerator":
-                      switch (part.toolInvocation.state) {
-                        case "call":
-                          return <ImageGenerating key={i} />;
-                        case "result":
-                          return (
-                            <div key={i} className="mb-4">
-                              <MemoizedMarkdown
-                                key={i}
-                                content={part.toolInvocation.result.message}
-                                id="123456"
-                              />
-                              <GeneratedImage
-                                base64={part.toolInvocation.result.base64}
-                                mimeType={part.toolInvocation.result.mimeType}
-                                fileUrl={part.toolInvocation.result.fileUrl}
-                              />
-                            </div>
-                          );
-                      }
-                  }
-                  break;
-              }
-            })}
+            <DefaultMarkdown key={messageId} id={messageId} parts={parts} />
 
             {/* )} */}
             <div
               className={cn(
-                "h-7 -ml-2 flex opacity-0 justify-start items-center transition-all duration-300",
+                "h-7 -ml-2 gap-x-1 text-neutral-400 flex opacity-0 justify-start items-center transition-all duration-300",
                 status === "ready" && "opacity-100"
               )}
             >
@@ -161,7 +121,7 @@ export const AssistantMessage = React.memo(
                   <Button
                     variant={`ghost`}
                     size={`icon`}
-                    className="cursor-pointer p-0! rounded-[10px]!"
+                    className="cursor-pointer size-7 p-0! rounded-[10px]!"
                   >
                     <CopyIcon className="size-4" />
                   </Button>
@@ -173,7 +133,7 @@ export const AssistantMessage = React.memo(
                   <Button
                     variant={`ghost`}
                     size={`icon`}
-                    className="cursor-pointer rounded-[10px]!"
+                    className="cursor-pointer size-7 rounded-[10px]!"
                   >
                     <Share2Icon className="size-4" />
                   </Button>
